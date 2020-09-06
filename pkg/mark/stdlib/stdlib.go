@@ -2,6 +2,7 @@ package stdlib
 
 import (
 	"strings"
+	"reflect"
 	"text/template"
 
 	"github.com/kovetskiy/mark/pkg/confluence"
@@ -83,6 +84,15 @@ func templates(api *confluence.API) (*template.Template, error) {
 					"]]><![CDATA[]]]]><![CDATA[>",
 				)
 			},
+
+			"default": func(arg interface{}, value interface{}) interface{} {
+				v := reflect.ValueOf(value)
+				if v.Kind() == reflect.Invalid {
+					return arg
+				}
+
+				return value
+			},
 		},
 	)
 
@@ -105,12 +115,12 @@ func templates(api *confluence.API) (*template.Template, error) {
 
 		// This template is used for rendering code in ```
 		`ac:code`: text(
-			`<ac:structured-macro ac:name="code">`,
-			`<ac:parameter ac:name="language">{{ .Language }}</ac:parameter>`,
-			`<ac:parameter ac:name="collapse">{{ .Collapse }}</ac:parameter>`,
-			`<ac:parameter ac:name="title">{{ .Title }}</ac:parameter>`,
-			`<ac:plain-text-body><![CDATA[{{ .Text | cdata }}]]></ac:plain-text-body>`,
-			`</ac:structured-macro>`,
+			`<ac:structured-macro ac:name="code">{{printf "\n"}}`,
+			`<ac:parameter ac:name="language">{{ .Language }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="collapse">{{ .Collapse }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="title">{{ .Title }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:plain-text-body><![CDATA[{{ .Text | cdata }}]]></ac:plain-text-body>{{printf "\n"}}`,
+			`</ac:structured-macro>{{printf "\n"}}`,
 		),
 
 		`ac:status`: text(
@@ -132,9 +142,23 @@ func templates(api *confluence.API) (*template.Template, error) {
 		),
 
 		`ac:jira:ticket`: text(
-			`<ac:structured-macro ac:name="jira">`,
-			`<ac:parameter ac:name="key">{{ .Ticket }}</ac:parameter>`,
-			`</ac:structured-macro>`,
+			`<ac:structured-macro ac:name="jira">{{printf "\n"}}`,
+			`<ac:parameter ac:name="key">{{ .Ticket }}</ac:parameter>{{printf "\n"}}`,
+			`</ac:structured-macro>{{printf "\n"}}`,
+		),
+
+		`ac:toc`: text(
+			`<ac:structured-macro ac:name="toc">{{printf "\n"}}`,
+			`<ac:parameter ac:name="printable">{{ .Printable | default "true" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="style">{{ .Style | default "disc" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="maxLevel">{{ .MaxLevel | default "7" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="indent">{{ .Indent | default "" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="minLevel">{{ .MinLevel | default "1" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="exclude">{{ .Exclude | default "" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="type">{{ .Type | default "list" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="outline">{{ .Outline | default "clear" }}</ac:parameter>{{printf "\n"}}`,
+			`<ac:parameter ac:name="include">{{ .Include | default "" }}</ac:parameter>{{printf "\n"}}`,
+			`</ac:structured-macro>{{printf "\n"}}`,
 		),
 
 		// TODO(seletskiy): more templates here
