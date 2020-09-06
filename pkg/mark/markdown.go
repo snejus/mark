@@ -3,6 +3,8 @@ package mark
 import (
 	"bytes"
 	"regexp"
+	"strings"
+	"strconv"
 
 	"github.com/kovetskiy/mark/pkg/log"
 	"github.com/kovetskiy/mark/pkg/mark/stdlib"
@@ -15,6 +17,25 @@ type ConfluenceRenderer struct {
 	Stdlib *stdlib.Lib
 }
 
+func ParseLang(lang string) string {
+	paramlist := strings.Fields(lang)
+	if len(paramlist) == 0 {
+		return lang
+	}
+	if paramlist[0] == "title" {
+		return ""
+	}
+	return paramlist[0]
+}
+
+func ParseTitle(lang string) string {
+	index := strings.Index(lang, "title")
+	if index >= 0 {
+		return lang[index+6:]
+	}
+	return ""
+}
+
 func (renderer ConfluenceRenderer) BlockCode(
 	out *bytes.Buffer,
 	text []byte,
@@ -25,9 +46,13 @@ func (renderer ConfluenceRenderer) BlockCode(
 		"ac:code",
 		struct {
 			Language string
+			Collapse string
+			Title    string
 			Text     string
 		}{
-			lang,
+			ParseLang(lang),
+			strconv.FormatBool(strings.Contains(lang, "collapse")),
+			ParseTitle(lang),
 			string(text),
 		},
 	)

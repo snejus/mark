@@ -107,7 +107,8 @@ func templates(api *confluence.API) (*template.Template, error) {
 		`ac:code`: text(
 			`<ac:structured-macro ac:name="code">`,
 			`<ac:parameter ac:name="language">{{ .Language }}</ac:parameter>`,
-			`<ac:parameter ac:name="collapse">false</ac:parameter>`,
+			`<ac:parameter ac:name="collapse">{{ .Collapse }}</ac:parameter>`,
+			`<ac:parameter ac:name="title">{{ .Title }}</ac:parameter>`,
 			`<ac:plain-text-body><![CDATA[{{ .Text | cdata }}]]></ac:plain-text-body>`,
 			`</ac:structured-macro>`,
 		),

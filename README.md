@@ -92,6 +92,24 @@ for example:
        Ticket: ${0} -->
 ```
 
+If you have long code blocks, you can make them collapsible:
+
+    ```bash collapse
+    ...
+    some long bash code block
+    ...
+    ```
+
+And you can also add a title:
+
+    ```bash collapse title Some long long bash function
+    ...
+    some long bash code block
+    ...
+    ```
+You can collapse or have a title without language (or have just the title) but the order must stay consistent:
+`[<language>] [collapse|] [title <your title>]`
+
 By default, mark provides several built-in templates and macros:
 
 * template `ac:status` to include badge-like text, which accepts following
@@ -129,7 +147,7 @@ By default, mark provides several built-in templates and macros:
 <!-- Space: TEST -->
 <!-- Title: My Article -->
 
-<!-- Include: disclamer.md -->
+<!-- Include: disclaimer.md -->
 
 This is my article.
 ```
